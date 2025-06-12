@@ -442,13 +442,22 @@ const Products: React.FC = () => {
           mappedVariants = [];
         }
       } else {
-        mappedVariants = variantsArr.map((variant: any) => ({
-          stock: variant.stock,
-          unitValues: Object.values(variant.attributes || {}),
-          importPrice: variant.importPrice,
-          sellingPrice: variant.sellingPrice || variant.price,
-          promotionalPrice: variant.promotionalPrice,
-        }));
+        // Tạo tất cả các tổ hợp có thể có của các unit
+        const allUnitCombinations = cartesianProduct(
+          attributes.map(attr => attr.options)
+        );
+
+        // Map các tổ hợp unit với thông tin variant
+        mappedVariants = allUnitCombinations.map((unitValues, index) => {
+          const variant = variantsArr[index] || {};
+          return {
+            stock: variant.stock || 0,
+            unitValues: unitValues,
+            importPrice: variant.importPrice || 0,
+            sellingPrice: variant.sellingPrice || variant.price || 0,
+            promotionalPrice: variant.promotionalPrice || 0,
+          };
+        });
       }
   
       const payload = {
@@ -463,7 +472,8 @@ const Products: React.FC = () => {
         })),
         variants: mappedVariants
       };
-  
+      console.log(JSON.stringify(payload));
+      
       formData.append('data', JSON.stringify(payload));
   
       // Append images
