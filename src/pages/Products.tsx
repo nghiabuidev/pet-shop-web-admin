@@ -683,6 +683,7 @@ const Products: React.FC = () => {
           </Form.Item>
         ),
       },
+      
       {
         title: '',
         key: 'action',
